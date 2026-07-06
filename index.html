@@ -251,15 +251,6 @@
             border-color: rgba(255, 255, 255, 0.06);
         }
 
-        .shop-item .level-badge {
-            font-size: 0.6rem;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
-            opacity: 0.5;
-            margin-left: 4px;
-        }
-
         /* ===== КНОПКИ СОХРАНЕНИЯ ===== */
         .save-buttons {
             display: flex;
@@ -516,16 +507,19 @@
 
             // ===== ФУНКЦИИ ДЛЯ РАБОТЫ С СОХРАНЕНИЯМИ =====
 
-            // Генерация текста сохранения в нужном формате
+            // Генерация текста сохранения
             function generateSaveText() {
-                const cost1 = Math.floor(state.upgrades[0].baseCost * Math.pow(state.upgrades[0].costMultiplier, state
-                    .upgrades[0].currentLevel));
-                const cost2 = Math.floor(state.upgrades[1].baseCost * Math.pow(state.upgrades[1].costMultiplier, state
-                    .upgrades[1].currentLevel));
-                const cost3 = Math.floor(state.upgrades[2].baseCost * Math.pow(state.upgrades[2].costMultiplier, state
-                    .upgrades[2].currentLevel));
-                const cost4 = Math.floor(state.upgrades[3].baseCost * Math.pow(state.upgrades[3].costMultiplier, state
-                    .upgrades[3].currentLevel));
+                // Получаем уровни улучшений
+                const level1 = state.upgrades[0].currentLevel;
+                const level2 = state.upgrades[1].currentLevel;
+                const level3 = state.upgrades[2].currentLevel;
+                const level4 = state.upgrades[3].currentLevel;
+
+                // Вычисляем стоимости (текущие)
+                const cost1 = Math.floor(state.upgrades[0].baseCost * Math.pow(state.upgrades[0].costMultiplier, level1));
+                const cost2 = Math.floor(state.upgrades[1].baseCost * Math.pow(state.upgrades[1].costMultiplier, level2));
+                const cost3 = Math.floor(state.upgrades[2].baseCost * Math.pow(state.upgrades[2].costMultiplier, level3));
+                const cost4 = Math.floor(state.upgrades[3].baseCost * Math.pow(state.upgrades[3].costMultiplier, level4));
 
                 return `конфеты = ${Math.floor(state.candies)}
 per.click = ${state.clickPower}
@@ -534,6 +528,10 @@ cost_first = ${cost1}
 cost_second = ${cost2}
 cost_third = ${cost3}
 cost_4th = ${cost4}
+level_first = ${level1}
+level_second = ${level2}
+level_third = ${level3}
+level_4th = ${level4}
 ∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆5∆5∆`;
             }
 
@@ -546,9 +544,8 @@ cost_4th = ${cost4}
                     const trimmed = line.trim();
                     if (!trimmed) continue;
 
-                    // Проверяем маркер в конце
+                    // Проверяем маркер
                     if (trimmed.includes('∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆5∆5∆')) {
-                        // Маркер найден, продолжаем
                         continue;
                     }
 
@@ -565,23 +562,56 @@ cost_4th = ${cost4}
                 return data;
             }
 
-            // Загрузка сохранения из объекта
+            // Загрузка сохранения из объекта (ПОЛНАЯ!)
             function loadSaveData(data) {
+                // 1. Восстанавливаем конфеты
                 if (data['конфеты'] !== undefined) {
                     state.candies = data['конфеты'];
                 }
-                if (data['per.click'] !== undefined) {
-                    // Пересчитаем позже через recalcPower
+
+                // 2. Восстанавливаем уровни улучшений
+                if (data['level_first'] !== undefined) {
+                    state.upgrades[0].currentLevel = Math.min(data['level_first'], state.upgrades[0].maxLevel);
                 }
-                if (data['auto_per.click'] !== undefined) {
-                    // Пересчитаем позже
+                if (data['level_second'] !== undefined) {
+                    state.upgrades[1].currentLevel = Math.min(data['level_second'], state.upgrades[1].maxLevel);
+                }
+                if (data['level_third'] !== undefined) {
+                    state.upgrades[2].currentLevel = Math.min(data['level_third'], state.upgrades[2].maxLevel);
+                }
+                if (data['level_4th'] !== undefined) {
+                    state.upgrades[3].currentLevel = Math.min(data['level_4th'], state.upgrades[3].maxLevel);
                 }
 
-                // Восстанавливаем уровни улучшений из стоимости
-                // Это сложно сделать точно, поэтому просто обновляем цены
-                // и пересчитываем силу
+                // 3. Пересчитываем силу (важно!)
                 recalcPower();
+
+                // 4. Обновляем UI
                 updateUI();
+
+                // 5. Проверяем, совпадают ли данные (можно вывести предупреждение, если нет)
+                const cost1 = Math.floor(state.upgrades[0].baseCost * Math.pow(state.upgrades[0].costMultiplier, state
+                    .upgrades[0].currentLevel));
+                const cost2 = Math.floor(state.upgrades[1].baseCost * Math.pow(state.upgrades[1].costMultiplier, state
+                    .upgrades[1].currentLevel));
+                const cost3 = Math.floor(state.upgrades[2].baseCost * Math.pow(state.upgrades[2].costMultiplier, state
+                    .upgrades[2].currentLevel));
+                const cost4 = Math.floor(state.upgrades[3].baseCost * Math.pow(state.upgrades[3].costMultiplier, state
+                    .upgrades[3].currentLevel));
+
+                // Проверка на читерство (если цены не совпадают с уровнями)
+                if (data['cost_first'] !== undefined && data['cost_first'] !== cost1) {
+                    console.warn('⚠️ Цена не совпадает с уровнем! Возможно, файл изменён.');
+                }
+                if (data['cost_second'] !== undefined && data['cost_second'] !== cost2) {
+                    console.warn('⚠️ Цена не совпадает с уровнем! Возможно, файл изменён.');
+                }
+                if (data['cost_third'] !== undefined && data['cost_third'] !== cost3) {
+                    console.warn('⚠️ Цена не совпадает с уровнем! Возможно, файл изменён.');
+                }
+                if (data['cost_4th'] !== undefined && data['cost_4th'] !== cost4) {
+                    console.warn('⚠️ Цена не совпадает с уровнем! Возможно, файл изменён.');
+                }
             }
 
             // ===== СОХРАНЕНИЕ В localStorage =====
@@ -653,8 +683,6 @@ cost_4th = ${cost4}
                         item.style.cursor = 'pointer';
                     }
 
-                    const levelText = isMaxed ? ' (MAX)' : ` (ур. ${upgrade.currentLevel})`;
-
                     item.innerHTML = `
                         <div class="info">
                             <span class="name">${upgrade.name}${isMaxed ? ' 🏆' : ''}</span>
@@ -722,7 +750,7 @@ cost_4th = ${cost4}
                 URL.revokeObjectURL(url);
             });
 
-            // ===== ЗАГРУЗКА .🍭 ФАЙЛА =====
+            // ===== ЗАГРУЗКА .🍭 ФАЙЛА (ПОЛНАЯ) =====
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -738,10 +766,11 @@ cost_4th = ${cost4}
                             return;
                         }
 
-                        // Проверяем наличие всех ключей
-                        const requiredKeys = ['конфеты', 'per.click', 'auto_per.click', 'cost_first', 'cost_second',
-                            'cost_third', 'cost_4th'
-                        ];
+                        // Проверяем наличие ВСЕХ ключей (включая уровни!)
+                        const requiredKeys = ['конфеты', 'per.click', 'auto_per.click', 
+                                             'cost_first', 'cost_second', 'cost_third', 'cost_4th',
+                                             'level_first', 'level_second', 'level_third', 'level_4th'];
+                        
                         let allKeysPresent = true;
                         for (const key of requiredKeys) {
                             if (data[key] === undefined) {
@@ -755,16 +784,11 @@ cost_4th = ${cost4}
                             return;
                         }
 
-                        // Загружаем данные
-                        state.candies = data['конфеты'];
-
-                        // Восстанавливаем уровни улучшений по ценам (приблизительно)
-                        // Просто обновляем цены через recalcPower
-                        recalcPower();
-                        updateUI();
+                        // ПОЛНАЯ ЗАГРУЗКА
+                        loadSaveData(data);
 
                         alert('✅ Сохранение успешно загружено!');
-                        fileInput.value = ''; // Сбрасываем input
+                        fileInput.value = '';
 
                     } catch (error) {
                         alert('❌ Ошибка при загрузке файла!');
@@ -792,11 +816,10 @@ cost_4th = ${cost4}
             recalcPower();
             updateUI();
 
-            // Сохраняемся каждые 10 секунд
             setInterval(saveGame, 10000);
 
             console.log('🍭 Конфетный кликер загружен!');
-            console.log('📥 Сохраняй прогресс в .🍭 файлы!');
+            console.log('📥 Теперь сохраняются ВСЕ уровни улучшений!');
         })();
     </script>
 </body>
