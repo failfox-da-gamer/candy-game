@@ -1,590 +1,803 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍬 Конфетный кликер</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>🍭 Конфетный клик</title>
     <style>
+        /* ===== ОБЩИЙ СТИЛЬ ===== */
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             user-select: none;
         }
 
         body {
-            margin: 0;
             min-height: 100vh;
-            background: linear-gradient(145deg, #fbe9f0 0%, #f8dbe9 100%);
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: linear-gradient(145deg, #1a0a2e, #2d1b4e);
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 16px;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: background 0.6s ease;
         }
 
-        .game-container {
-            max-width: 480px;
+        .container {
+            max-width: 520px;
             width: 100%;
-            background: rgba(255, 245, 248, 0.7);
-            backdrop-filter: blur(4px);
-            border-radius: 56px;
-            padding: 28px 24px 36px;
-            box-shadow: 0 20px 40px rgba(200, 120, 150, 0.25),
-                        0 6px 12px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: all 0.2s;
-        }
-
-        h1 {
-            text-align: center;
-            font-weight: 600;
-            font-size: 2.2rem;
-            margin: 0 0 8px 0;
-            color: #5a3e4a;
-            letter-spacing: 1px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ===== УНИВЕРСАЛЬНОЕ МЕНЮ ===== */
+        .nav-menu {
+            width: 100%;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
             justify-content: center;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
-        }
-        h1 span {
-            background: #ffdce8;
-            padding: 0 16px;
-            border-radius: 80px;
-            font-size: 1.8rem;
-            line-height: 1.4;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .candy-counter {
-            background: #ffeef4;
-            border-radius: 60px;
-            padding: 12px 20px;
-            margin: 12px 0 20px 0;
+        .nav-menu a {
+            color: #f0f8ff;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(245, 197, 66, 0.15);
+            border-color: #f5c542;
+            transform: scale(1.02);
+            color: #f5c542;
+        }
+
+        .nav-menu a.active {
+            background: rgba(245, 197, 66, 0.15);
+            border-color: #f5c542;
+            color: #f5c542;
+        }
+
+        /* ===== КАРТОЧКА ИГРЫ ===== */
+        .game-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 3.5rem;
+            padding: 2.5rem 2rem 2.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #f0f8ff;
             text-align: center;
-            box-shadow: inset 0 2px 8px rgba(180, 80, 120, 0.08);
-            border: 1px solid #ffd9e6;
+            transition: all 0.3s ease;
         }
 
-        .candy-counter span {
-            font-size: 2.8rem;
+        .game-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.7);
+        }
+
+        /* ===== КОНФЕТА ===== */
+        .candy-display {
+            font-size: 6rem;
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, filter 0.3s ease;
+            display: inline-block;
+            filter: drop-shadow(0 8px 25px rgba(255, 200, 100, 0.15));
+        }
+
+        .candy-display:active {
+            transform: scale(0.92) rotate(-8deg);
+            filter: drop-shadow(0 4px 30px rgba(255, 200, 100, 0.4));
+        }
+
+        .candy-display:hover {
+            transform: scale(1.03);
+        }
+
+        .candy-count {
+            font-size: 3.6rem;
             font-weight: 700;
-            color: #602f44;
+            color: #ffd966;
+            text-shadow: 0 0 30px rgba(245, 197, 66, 0.15);
+        }
+
+        .candy-label {
+            font-size: 1.2rem;
+            opacity: 0.5;
+            margin-top: -0.2rem;
+            margin-bottom: 0.8rem;
             letter-spacing: 2px;
         }
-        .candy-counter small {
-            font-size: 1.2rem;
-            color: #87556b;
-            margin-left: 6px;
-        }
 
-        .candy-button {
-            background: radial-gradient(circle at 30% 30%, #ffb3c6, #f284a8);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: 16px auto 24px;
+        .stats {
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 7rem;
-            box-shadow: 0 16px 0 #a55373, 0 12px 30px rgba(180, 70, 110, 0.4);
-            cursor: pointer;
-            transition: all 0.07s ease;
-            border: 4px solid #ffeef4;
-            color: #fff6e5;
-            text-shadow: 0 4px 0 #9f4b6b;
-            transform: translateY(-4px);
-            will-change: transform;
-        }
-
-        .candy-button:active {
-            transform: translateY(8px);
-            box-shadow: 0 6px 0 #a55373, 0 12px 30px rgba(180, 70, 110, 0.4);
-        }
-
-        .candy-button:disabled {
-            opacity: 0.6;
-            filter: grayscale(0.3);
-            transform: translateY(4px);
-            box-shadow: 0 8px 0 #7a4a5f, 0 12px 30px rgba(130, 70, 90, 0.3);
-            pointer-events: none;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 24px 0 20px;
-            background: #ffeef5;
-            padding: 16px 14px;
-            border-radius: 48px;
-            border: 1px solid #ffdae7;
+            gap: 2.5rem;
+            margin: 0.8rem 0 1.8rem;
+            flex-wrap: wrap;
         }
 
         .stat-item {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 32px;
-            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .stat-item .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #8e6278;
-        }
+
         .stat-item .value {
             font-size: 1.6rem;
             font-weight: 600;
-            color: #452b38;
-            line-height: 1.2;
         }
 
-        .shop {
-            background: #ffecf2;
-            border-radius: 44px;
-            padding: 18px 16px 14px;
-            margin: 16px 0 8px;
-            border: 1px solid #ffd4e3;
+        .stat-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.4;
+            letter-spacing: 1px;
         }
 
-        .shop h3 {
-            margin: 0 0 14px 0;
-            font-weight: 500;
-            color: #513b45;
-            letter-spacing: 0.3px;
+        .stat-item .value .emoji {
+            font-size: 1.2rem;
+            margin-right: 4px;
+        }
+
+        /* ===== МАГАЗИН ===== */
+        .shop-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 0.2rem;
+            margin-bottom: 1.2rem;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 1.2rem;
             justify-content: center;
+            gap: 8px;
         }
 
-        .upgrade-list {
+        .shop-title span {
+            font-size: 1.4rem;
+        }
+
+        .shop-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .upgrade-item {
+        .shop-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            padding: 0.9rem 1.4rem;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background: white;
-            padding: 12px 18px 12px 20px;
-            border-radius: 60px;
-            box-shadow: 0 2px 10px rgba(180, 90, 120, 0.08);
-            border: 1px solid #ffdae7;
-            transition: 0.15s;
+            align-items: center;
+            transition: 0.3s;
+            cursor: pointer;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .upgrade-item .info {
+        .shop-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .shop-item .info {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-        }
-        .upgrade-item .info .name {
-            font-weight: 600;
-            color: #452b38;
-            font-size: 1rem;
-        }
-        .upgrade-item .info .desc {
-            font-size: 0.75rem;
-            color: #956d7e;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            text-align: left;
         }
 
-        .upgrade-item .price-badge {
-            background: #ffdee9;
-            padding: 6px 14px;
+        .shop-item .info .name {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .shop-item .info .desc {
+            font-size: 0.75rem;
+            opacity: 0.5;
+        }
+
+        .shop-item .price {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.3rem 1rem;
             border-radius: 40px;
-            font-weight: 600;
-            color: #6d3f53;
             font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            white-space: nowrap;
             display: flex;
             align-items: center;
             gap: 4px;
-            border: 1px solid #fccadc;
+            transition: 0.3s;
         }
 
-        .upgrade-item button {
-            background: #d68aa8;
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.12s;
-            box-shadow: 0 3px 0 #8b5370;
-            border: 1px solid #f3bfd3;
-            letter-spacing: 0.3px;
-            min-width: 76px;
+        .shop-item .price .candy-icon {
+            font-size: 1rem;
         }
 
-        .upgrade-item button:active {
-            transform: translateY(4px);
-            box-shadow: 0 0px 0 #8b5370;
-        }
-
-        .upgrade-item button:disabled {
-            opacity: 0.45;
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #7a4a5f;
+        .shop-item.disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
             pointer-events: none;
-            background: #b690a3;
         }
 
-        .reset-area {
+        .shop-item.disabled:hover {
+            transform: none;
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .shop-item .level-badge {
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            opacity: 0.5;
+            margin-left: 4px;
+        }
+
+        /* ===== КНОПКИ СОХРАНЕНИЯ ===== */
+        .save-buttons {
             display: flex;
-            justify-content: center;
-            margin-top: 16px;
+            gap: 10px;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
         }
 
-        .reset-btn {
-            background: transparent;
-            border: 1px solid #dbb6c7;
-            padding: 10px 28px;
+        .save-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f0f8ff;
+            padding: 0.6rem 1.2rem;
             border-radius: 60px;
-            font-size: 0.9rem;
-            color: #7c5b6b;
-            font-weight: 500;
-            background: #fff3f8;
+            font-size: 0.8rem;
             cursor: pointer;
-            transition: 0.1s;
-            box-shadow: 0 2px 6px rgba(170, 100, 130, 0.1);
+            transition: 0.3s;
+            font-weight: 500;
+            min-width: 100px;
         }
 
-        .reset-btn:active {
-            transform: scale(0.95);
-            background: #fce3ed;
+        .save-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
         }
 
-        .footer {
-            font-size: 0.7rem;
+        .save-btn.download {
+            border-color: rgba(245, 197, 66, 0.3);
+            color: #f5c542;
+        }
+
+        .save-btn.download:hover {
+            background: rgba(245, 197, 66, 0.1);
+            border-color: #f5c542;
+        }
+
+        .save-btn.upload {
+            border-color: rgba(100, 200, 255, 0.3);
+            color: #64c8ff;
+            position: relative;
+        }
+
+        .save-btn.upload:hover {
+            background: rgba(100, 200, 255, 0.1);
+            border-color: #64c8ff;
+        }
+
+        .save-btn.upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ===== КНОПКА СБРОСА ===== */
+        .reset-btn {
+            margin-top: 0.8rem;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.15);
+            color: #ff7a7a;
+            padding: 0.6rem 2rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+            background: transparent;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 60, 60, 0.15);
+            border-color: #ff7a7a;
+            transform: scale(1.02);
+        }
+
+        /* ===== ФУТЕР ===== */
+        .footer-note {
+            margin-top: 1.2rem;
+            font-size: 0.65rem;
             text-align: center;
-            color: #b28b9c;
-            margin-top: 16px;
-            opacity: 0.7;
+            opacity: 0.2;
+            letter-spacing: 0.8px;
         }
 
-        @media (max-width: 440px) {
-            .game-container { padding: 20px 16px; }
-            .candy-button { width: 160px; height: 160px; font-size: 5.5rem; }
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 480px) {
+            .game-card {
+                padding: 1.8rem 1.2rem 1.8rem;
+                border-radius: 2.5rem;
+            }
+
+            .candy-display {
+                font-size: 4.8rem;
+            }
+
+            .candy-count {
+                font-size: 2.8rem;
+            }
+
+            .stats {
+                gap: 1.2rem;
+            }
+
+            .stat-item .value {
+                font-size: 1.2rem;
+            }
+
+            .shop-item {
+                padding: 0.7rem 1rem;
+            }
+
+            .shop-item .info .name {
+                font-size: 0.9rem;
+            }
+
+            .shop-item .price {
+                font-size: 0.8rem;
+                padding: 0.2rem 0.8rem;
+            }
+
+            .nav-menu {
+                gap: 8px;
+                padding: 10px 12px;
+            }
+
+            .nav-menu a {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+
+            .save-buttons {
+                flex-direction: column;
+            }
+
+            .save-btn {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .candy-display {
+                font-size: 3.8rem;
+            }
+
+            .candy-count {
+                font-size: 2.2rem;
+            }
+
+            .shop-item {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .shop-item .info {
+                align-items: center;
+            }
+
+            .shop-item .price {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="game-container" role="main">
-    <h1>
-        🍭 Конфетный <span>клик</span>
-    </h1>
+    <div class="container">
 
-    <div class="candy-counter">
-        <span id="candyCount">0</span> <small>🍬</small>
-    </div>
+        <!-- ===== МЕНЮ ===== -->
+        <nav class="nav-menu">
+            <a href="https://failfox-da-gamer.github.io/weather/">🌤️ Ряженка</a>
+            <a href="https://goo.su/5AW3G">🐗 Свиньи-сапёры</a>
+            <a href="https://failfox-da-gamer.github.io/candy-game/" class="active">🍭 Конфетный клик</a>
+        </nav>
 
-    <div class="candy-button" id="candyButton" role="button" tabindex="0" aria-label="Кликни на конфету">
-        🍬
-    </div>
+        <!-- ===== ИГРА ===== -->
+        <div class="game-card">
 
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="label">За клик</div>
-            <div class="value" id="perClickDisplay">1</div>
+            <!-- Конфета -->
+            <div class="candy-display" id="candyButton">🍭</div>
+            <div class="candy-count" id="candyCount">0 <span class="candy-label">🍬</span></div>
+
+            <!-- Статистика -->
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="value" id="clickPower"><span class="emoji">👆</span>1</span>
+                    <span class="label">За клик</span>
+                </div>
+                <div class="stat-item">
+                    <span class="value" id="autoPower"><span class="emoji">⏳</span>0</span>
+                    <span class="label">Авто / сек</span>
+                </div>
+            </div>
+
+            <!-- Магазин -->
+            <div class="shop-title"><span>✨</span> Магазин улучшений <span>✨</span></div>
+            <div class="shop-grid" id="shopContainer">
+                <!-- Улучшения через JS -->
+            </div>
+
+            <!-- Кнопки сохранения -->
+            <div class="save-buttons">
+                <button class="save-btn download" id="downloadSave">📥 Скачать .🍭</button>
+                <button class="save-btn upload" id="uploadSave">
+                    📤 Загрузить .🍭
+                    <input type="file" id="fileInput" accept=".🍭" />
+                </button>
+            </div>
+
+            <!-- Кнопка сброса -->
+            <button class="reset-btn" id="resetBtn">🗑️ Сбросить прогресс</button>
+
+            <div class="footer-note">🍬 Сделано с любовью к конфетам</div>
         </div>
-        <div class="stat-item">
-            <div class="label">Авто / сек</div>
-            <div class="value" id="autoPerSec">0</div>
-        </div>
+
     </div>
 
-    <div class="shop">
-        <h3>✨ Магазин улучшений</h3>
-        <div class="upgrade-list" id="upgradeList">
-            <!-- динамически через JS -->
-        </div>
-    </div>
+    <script>
+        (function() {
+            "use strict";
 
-    <div class="reset-area">
-        <button class="reset-btn" id="resetGameBtn">🔄 Сбросить прогресс</button>
-    </div>
-    <div class="footer">тыкай 🍬 — покупай улучшения</div>
-</div>
+            // ===== СОСТОЯНИЕ =====
+            const state = {
+                candies: 0,
+                clickPower: 1,
+                autoPower: 0,
+                upgrades: [
+                    { id: 'click', name: '🍭 Сила клика', desc: '+1 за клик', baseCost: 10, costMultiplier: 1.6,
+                    currentLevel: 0, maxLevel: 50, power: 1 },
+                    { id: 'auto', name: '⏳ Автокликер', desc: '+1/сек', baseCost: 25, costMultiplier: 1.8,
+                    currentLevel: 0, maxLevel: 30, power: 1 },
+                    { id: 'click2', name: '🍬 Мощный клик', desc: '+5 за клик', baseCost: 80, costMultiplier: 1.7,
+                    currentLevel: 0, maxLevel: 40, power: 5 },
+                    { id: 'auto2', name: '⚡ Турбо-авто', desc: '+5/сек', baseCost: 200, costMultiplier: 2.0,
+                    currentLevel: 0, maxLevel: 25, power: 5 }
+                ]
+            };
 
-<script>
-    (function() {
-        // --- Игровое состояние ---
-        let state = {
-            candies: 0,
-            clickPower: 1,
-            autoPower: 0,
-            // улучшения: [ { name, desc, basePrice, priceMultiplier, type, level, powerPerLevel, maxLevel } ]
-            upgrades: [
-                {
-                    id: 'click',
-                    name: '🍭 Сила клика',
-                    desc: '+1 за клик',
-                    basePrice: 10,
-                    priceMultiplier: 1.6,
-                    type: 'click',
-                    level: 0,
-                    powerPerLevel: 1,
-                    maxLevel: 70
-                },
-                {
-                    id: 'auto',
-                    name: '⏳ Автокликер',
-                    desc: '+1/сек',
-                    basePrice: 25,
-                    priceMultiplier: 1.8,
-                    type: 'auto',
-                    level: 0,
-                    powerPerLevel: 1,
-                    maxLevel: 60
-                },
-                {
-                    id: 'click_bonus',
-                    name: '🍬 Мощный клик',
-                    desc: '+5 за клик',
-                    basePrice: 80,
-                    priceMultiplier: 2.0,
-                    type: 'click',
-                    level: 0,
-                    powerPerLevel: 5,
-                    maxLevel: 40
-                },
-                {
-                    id: 'auto_bonus',
-                    name: '⚡ Турбо-авто',
-                    desc: '+5/сек',
-                    basePrice: 200,
-                    priceMultiplier: 2.2,
-                    type: 'auto',
-                    level: 0,
-                    powerPerLevel: 5,
-                    maxLevel: 30
-                }
-            ]
-        };
+            // ===== DOM =====
+            const candyCountEl = document.getElementById('candyCount');
+            const candyButton = document.getElementById('candyButton');
+            const clickPowerEl = document.getElementById('clickPower');
+            const autoPowerEl = document.getElementById('autoPower');
+            const shopContainer = document.getElementById('shopContainer');
+            const resetBtn = document.getElementById('resetBtn');
+            const downloadBtn = document.getElementById('downloadSave');
+            const fileInput = document.getElementById('fileInput');
 
-        // --- DOM-ссылки ---
-        const candySpan = document.getElementById('candyCount');
-        const perClickDisplay = document.getElementById('perClickDisplay');
-        const autoPerSecDisplay = document.getElementById('autoPerSec');
-        const candyButton = document.getElementById('candyButton');
-        const upgradeListEl = document.getElementById('upgradeList');
-        const resetBtn = document.getElementById('resetGameBtn');
+            // ===== ФУНКЦИИ ДЛЯ РАБОТЫ С СОХРАНЕНИЯМИ =====
 
-        // --- Вспомогательные функции ---
-        function getClickPower() {
-            let total = 0;
-            state.upgrades.forEach(u => {
-                if (u.type === 'click') {
-                    total += u.level * u.powerPerLevel;
-                }
-            });
-            // базовый 1, если нет улучшений
-            return total > 0 ? total : 1;
-        }
+            // Генерация текста сохранения в нужном формате
+            function generateSaveText() {
+                const cost1 = Math.floor(state.upgrades[0].baseCost * Math.pow(state.upgrades[0].costMultiplier, state
+                    .upgrades[0].currentLevel));
+                const cost2 = Math.floor(state.upgrades[1].baseCost * Math.pow(state.upgrades[1].costMultiplier, state
+                    .upgrades[1].currentLevel));
+                const cost3 = Math.floor(state.upgrades[2].baseCost * Math.pow(state.upgrades[2].costMultiplier, state
+                    .upgrades[2].currentLevel));
+                const cost4 = Math.floor(state.upgrades[3].baseCost * Math.pow(state.upgrades[3].costMultiplier, state
+                    .upgrades[3].currentLevel));
 
-        function getAutoPower() {
-            let total = 0;
-            state.upgrades.forEach(u => {
-                if (u.type === 'auto') {
-                    total += u.level * u.powerPerLevel;
-                }
-            });
-            return total;
-        }
+                return `конфеты = ${Math.floor(state.candies)}
+per.click = ${state.clickPower}
+auto_per.click = ${state.autoPower}
+cost_first = ${cost1}
+cost_second = ${cost2}
+cost_third = ${cost3}
+cost_4th = ${cost4}
+∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆5∆5∆`;
+            }
 
-        function getUpgradePrice(upgrade) {
-            // price = basePrice * (priceMultiplier ^ level)
-            return Math.floor(upgrade.basePrice * Math.pow(upgrade.priceMultiplier, upgrade.level));
-        }
+            // Парсинг загруженного файла
+            function parseSaveText(text) {
+                const lines = text.split('\n');
+                const data = {};
 
-        // --- Обновление UI ---
-        function renderAll() {
-            // Обновляем счётчик
-            candySpan.textContent = Math.floor(state.candies);
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
 
-            // Сила клика и авто
-            const clickPow = getClickPower();
-            const autoPow = getAutoPower();
-            perClickDisplay.textContent = clickPow;
-            autoPerSecDisplay.textContent = autoPow;
-
-            // Рендерим улучшения
-            renderUpgrades();
-
-            // Сохраняем состояние в localStorage
-            saveState();
-        }
-
-        function renderUpgrades() {
-            let html = '';
-            state.upgrades.forEach((upgrade, index) => {
-                const price = getUpgradePrice(upgrade);
-                const isMaxed = upgrade.level >= upgrade.maxLevel;
-                const canAfford = state.candies >= price && !isMaxed;
-
-                html += `
-                    <div class="upgrade-item" data-index="${index}">
-                        <div class="info">
-                            <span class="name">${upgrade.name} (ур. ${upgrade.level})</span>
-                            <span class="desc">
-                                <span>${upgrade.desc}</span>
-                                <span>💰 ${price}</span>
-                            </span>
-                        </div>
-                        <button ${!canAfford ? 'disabled' : ''} data-index="${index}" class="buy-upgrade-btn">
-                            ${isMaxed ? 'MAX' : 'Купить'}
-                        </button>
-                    </div>
-                `;
-            });
-            upgradeListEl.innerHTML = html;
-
-            // Вешаем обработчики на кнопки "Купить"
-            document.querySelectorAll('.buy-upgrade-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(btn.dataset.index, 10);
-                    if (!isNaN(idx)) {
-                        buyUpgrade(idx);
+                    // Проверяем маркер в конце
+                    if (trimmed.includes('∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆∆5∆5∆')) {
+                        // Маркер найден, продолжаем
+                        continue;
                     }
-                });
-            });
-        }
 
-        // --- Логика покупки ---
-        function buyUpgrade(index) {
-            const upgrade = state.upgrades[index];
-            if (!upgrade) return;
-
-            // проверка на максимальный уровень
-            if (upgrade.level >= upgrade.maxLevel) {
-                return;
-            }
-
-            const price = getUpgradePrice(upgrade);
-            if (state.candies < price) {
-                return; // недостаточно конфет
-            }
-
-            // Списываем конфеты
-            state.candies -= price;
-            // Увеличиваем уровень
-            upgrade.level += 1;
-
-            // Пересчёт силы клика и авто происходит через геттеры
-            renderAll();
-        }
-
-        // --- Клик по конфете ---
-        function handleCandyClick() {
-            const power = getClickPower();
-            state.candies += power;
-            renderAll();
-
-            // Небольшая анимация (визуальный фидбек)
-            candyButton.style.transform = 'scale(0.92)';
-            setTimeout(() => {
-                candyButton.style.transform = '';
-            }, 90);
-        }
-
-        // --- Авто-тик (секунда) ---
-        function autoTick() {
-            const auto = getAutoPower();
-            if (auto > 0) {
-                state.candies += auto;
-                renderAll();
-            }
-        }
-
-        // --- Сохранение / загрузка ---
-        function saveState() {
-            try {
-                const data = {
-                    candies: state.candies,
-                    upgrades: state.upgrades.map(u => ({
-                        id: u.id,
-                        level: u.level
-                    }))
-                };
-                localStorage.setItem('candyClickerSave', JSON.stringify(data));
-            } catch (e) {
-                // игнорируем
-            }
-        }
-
-        function loadState() {
-            try {
-                const raw = localStorage.getItem('candyClickerSave');
-                if (!raw) return false;
-                const data = JSON.parse(raw);
-                if (typeof data.candies === 'number') {
-                    state.candies = data.candies;
-                }
-                if (Array.isArray(data.upgrades)) {
-                    data.upgrades.forEach(saved => {
-                        const target = state.upgrades.find(u => u.id === saved.id);
-                        if (target && typeof saved.level === 'number') {
-                            target.level = Math.min(saved.level, target.maxLevel);
+                    const parts = trimmed.split('=');
+                    if (parts.length === 2) {
+                        const key = parts[0].trim();
+                        const value = parseInt(parts[1].trim());
+                        if (!isNaN(value)) {
+                            data[key] = value;
                         }
-                    });
+                    }
                 }
-                return true;
-            } catch (e) {
-                return false;
+
+                return data;
             }
-        }
 
-        // --- Сброс прогресса ---
-        function resetGame() {
-            if (confirm('Сбросить весь прогресс? Все конфеты и улучшения будут удалены.')) {
-                // Сбрасываем уровни улучшений
-                state.upgrades.forEach(u => u.level = 0);
-                state.candies = 0;
-                renderAll();
-                localStorage.removeItem('candyClickerSave');
+            // Загрузка сохранения из объекта
+            function loadSaveData(data) {
+                if (data['конфеты'] !== undefined) {
+                    state.candies = data['конфеты'];
+                }
+                if (data['per.click'] !== undefined) {
+                    // Пересчитаем позже через recalcPower
+                }
+                if (data['auto_per.click'] !== undefined) {
+                    // Пересчитаем позже
+                }
+
+                // Восстанавливаем уровни улучшений из стоимости
+                // Это сложно сделать точно, поэтому просто обновляем цены
+                // и пересчитываем силу
+                recalcPower();
+                updateUI();
             }
-        }
 
-        // --- Инициализация ---
-        function init() {
-            // Загрузка сохранения
-            const loaded = loadState();
-            // Если не загрузилось, всё равно рендерим с дефолтными значениями
-            renderAll();
+            // ===== СОХРАНЕНИЕ В localStorage =====
+            function saveGame() {
+                try {
+                    const data = {
+                        candies: state.candies,
+                        clickPower: state.clickPower,
+                        autoPower: state.autoPower,
+                        upgrades: state.upgrades.map(u => ({ currentLevel: u.currentLevel }))
+                    };
+                    localStorage.setItem('candyClickerSave', JSON.stringify(data));
+                } catch (e) { /* игнорируем */ }
+            }
 
-            // Событие клика по конфете
-            candyButton.addEventListener('click', handleCandyClick);
+            function loadGame() {
+                try {
+                    const saved = localStorage.getItem('candyClickerSave');
+                    if (!saved) return false;
+                    const data = JSON.parse(saved);
+                    state.candies = data.candies || 0;
+                    state.clickPower = data.clickPower || 1;
+                    state.autoPower = data.autoPower || 0;
+                    if (data.upgrades && data.upgrades.length === state.upgrades.length) {
+                        data.upgrades.forEach((s, i) => {
+                            if (state.upgrades[i]) {
+                                state.upgrades[i].currentLevel = s.currentLevel || 0;
+                            }
+                        });
+                    }
+                    return true;
+                } catch (e) { return false; }
+            }
 
-            // Сброс
-            resetBtn.addEventListener('click', resetGame);
+            // ===== ПЕРЕСЧЁТ СИЛЫ =====
+            function recalcPower() {
+                let clickPower = 1;
+                let autoPower = 0;
+                state.upgrades.forEach(u => {
+                    if (u.id === 'click') clickPower += u.currentLevel * 1;
+                    if (u.id === 'auto') autoPower += u.currentLevel * 1;
+                    if (u.id === 'click2') clickPower += u.currentLevel * 5;
+                    if (u.id === 'auto2') autoPower += u.currentLevel * 5;
+                });
+                state.clickPower = clickPower;
+                state.autoPower = autoPower;
+            }
 
-            // Авто-тик каждую секунду
-            setInterval(autoTick, 1000);
+            // ===== ОБНОВЛЕНИЕ UI =====
+            function updateUI() {
+                candyCountEl.innerHTML = Math.floor(state.candies) + ' <span class="candy-label">🍬</span>';
+                clickPowerEl.innerHTML = `<span class="emoji">👆</span>${state.clickPower}`;
+                autoPowerEl.innerHTML = `<span class="emoji">⏳</span>${state.autoPower}`;
+                renderShop();
+                saveGame();
+            }
 
-            // Дополнительно: каждые 5 секунд сохраняем (на всякий случай)
-            setInterval(saveState, 5000);
+            // ===== МАГАЗИН =====
+            function renderShop() {
+                shopContainer.innerHTML = '';
+                state.upgrades.forEach((upgrade, index) => {
+                    const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, upgrade.currentLevel));
+                    const canBuy = state.candies >= cost && upgrade.currentLevel < upgrade.maxLevel;
+                    const isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
 
-            // Сохраняем при закрытии/перезагрузке
-            window.addEventListener('beforeunload', () => {
-                saveState();
+                    const item = document.createElement('div');
+                    item.className = 'shop-item' + (isMaxed ? ' disabled' : '');
+                    if (!isMaxed) {
+                        item.style.cursor = 'pointer';
+                    }
+
+                    const levelText = isMaxed ? ' (MAX)' : ` (ур. ${upgrade.currentLevel})`;
+
+                    item.innerHTML = `
+                        <div class="info">
+                            <span class="name">${upgrade.name}${isMaxed ? ' 🏆' : ''}</span>
+                            <span class="desc">${upgrade.desc} ${isMaxed ? '— Достигнут максимум!' : ''}</span>
+                        </div>
+                        <div class="price">
+                            <span class="candy-icon">🍬</span>
+                            ${isMaxed ? 'MAX' : Math.floor(cost)}
+                        </div>
+                    `;
+
+                    if (!isMaxed) {
+                        item.addEventListener('click', function() {
+                            buyUpgrade(index);
+                        });
+                    }
+
+                    shopContainer.appendChild(item);
+                });
+            }
+
+            function buyUpgrade(index) {
+                const upgrade = state.upgrades[index];
+                if (!upgrade) return;
+                if (upgrade.currentLevel >= upgrade.maxLevel) return;
+
+                const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, upgrade.currentLevel));
+                if (state.candies < cost) return;
+
+                state.candies -= cost;
+                upgrade.currentLevel++;
+                recalcPower();
+                updateUI();
+            }
+
+            // ===== КЛИК ПО КОНФЕТЕ =====
+            candyButton.addEventListener('click', function() {
+                state.candies += state.clickPower;
+                this.style.transform = 'scale(0.88) rotate(-10deg)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 120);
+                updateUI();
             });
 
-            console.log('🍬 Конфетный кликер запущен!');
-        }
+            // ===== АВТОКЛИКЕР =====
+            setInterval(function() {
+                if (state.autoPower > 0) {
+                    state.candies += state.autoPower;
+                    updateUI();
+                }
+            }, 1000);
 
-        // Старт
-        init();
-    })();
-</script>
+            // ===== СКАЧИВАНИЕ .🍭 ФАЙЛА =====
+            downloadBtn.addEventListener('click', function() {
+                const text = generateSaveText();
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `save_${new Date().toISOString().slice(0,10)}.🍭`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // ===== ЗАГРУЗКА .🍭 ФАЙЛА =====
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const text = event.target.result;
+                        const data = parseSaveText(text);
+
+                        if (Object.keys(data).length === 0) {
+                            alert('❌ Неверный формат файла!');
+                            return;
+                        }
+
+                        // Проверяем наличие всех ключей
+                        const requiredKeys = ['конфеты', 'per.click', 'auto_per.click', 'cost_first', 'cost_second',
+                            'cost_third', 'cost_4th'
+                        ];
+                        let allKeysPresent = true;
+                        for (const key of requiredKeys) {
+                            if (data[key] === undefined) {
+                                allKeysPresent = false;
+                                break;
+                            }
+                        }
+
+                        if (!allKeysPresent) {
+                            alert('❌ Файл повреждён или имеет неверный формат!');
+                            return;
+                        }
+
+                        // Загружаем данные
+                        state.candies = data['конфеты'];
+
+                        // Восстанавливаем уровни улучшений по ценам (приблизительно)
+                        // Просто обновляем цены через recalcPower
+                        recalcPower();
+                        updateUI();
+
+                        alert('✅ Сохранение успешно загружено!');
+                        fileInput.value = ''; // Сбрасываем input
+
+                    } catch (error) {
+                        alert('❌ Ошибка при загрузке файла!');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // ===== СБРОС =====
+            resetBtn.addEventListener('click', function() {
+                if (confirm('🗑️ Сбросить весь прогресс?')) {
+                    localStorage.removeItem('candyClickerSave');
+                    state.candies = 0;
+                    state.clickPower = 1;
+                    state.autoPower = 0;
+                    state.upgrades.forEach(u => u.currentLevel = 0);
+                    recalcPower();
+                    updateUI();
+                }
+            });
+
+            // ===== ЗАПУСК =====
+            loadGame();
+            recalcPower();
+            updateUI();
+
+            // Сохраняемся каждые 10 секунд
+            setInterval(saveGame, 10000);
+
+            console.log('🍭 Конфетный кликер загружен!');
+            console.log('📥 Сохраняй прогресс в .🍭 файлы!');
+        })();
+    </script>
 </body>
 </html>
